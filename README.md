@@ -25,7 +25,6 @@ This repository contains a project for generating animated videos from text prom
    git clone https://github.com/airookie17/BDIATextToVideo.git
    cd BDIATextToVideo
 
-
 2. **Install the required packages**:
   
    ```bash
@@ -33,7 +32,6 @@ This repository contains a project for generating animated videos from text prom
    cd diffusers
    pip install -e .
    cd ..
-
 
 ## Usage
 
@@ -46,7 +44,6 @@ To run the sample script, use the following command:
    ```bash
    python sample.py
 ```
-
 ## Modifying Parameters
 
 You can modify the parameters in the sample.py script to customize the video generation. Here are the parameters you can change:
@@ -84,6 +81,6 @@ Here's a brief overview of the implementation:
 
 ### Example Usage
 
-o use the `BDIADDIMScheduler`, you need to set the `scheduler_type` parameter to `bdia-ddim` and provide a `gamma` value when calling the `generate_video` function in `sample.py`.
+To use the `BDIADDIMScheduler`, you need to set the `scheduler_type` parameter to `bdia-ddim` and provide a `gamma` value when calling the `generate_video` function in `sample.py`.
 
 For more details on the implementation, please refer to the `generate_videos.py` and `scheduling_bdia_ddim.py` files.
