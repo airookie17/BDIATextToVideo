@@ -39,7 +39,7 @@ This repository contains a project for generating animated videos from text prom
 
 ### Running the Sample Script
 
-The sample.py script installs the necessary libraries, sets up the environment, and runs the generate_videos.py script with default parameters.
+The sample.py script installs the necessary libraries, sets up the environment, and runs the `generate_videos.py` script with default parameters.
 
 To run the sample script, use the following command:
 
@@ -82,3 +82,8 @@ Here's a brief overview of the implementation:
 2. **Step Function**: The step function is overridden to include the BDIA logic, which adjusts the previous sample based on the current and last denoised samples.
 3. **Set Timesteps**: The `set_timesteps` function is also overridden to reset the state for each new denoising process.
 
+### Example Usage
+
+o use the `BDIADDIMScheduler`, you need to set the `scheduler_type` parameter to `bdia-ddim` and provide a `gamma` value when calling the `generate_video` function in `sample.py`.
+
+For more details on the implementation, please refer to the `generate_videos.py` and `scheduling_bdia_ddim.py `files.
