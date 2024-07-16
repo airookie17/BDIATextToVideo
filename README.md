@@ -86,4 +86,4 @@ Here's a brief overview of the implementation:
 
 o use the `BDIADDIMScheduler`, you need to set the `scheduler_type` parameter to `bdia-ddim` and provide a `gamma` value when calling the `generate_video` function in `sample.py`.
 
-For more details on the implementation, please refer to the `generate_videos.py` and `scheduling_bdia_ddim.py `files.
+For more details on the implementation, please refer to the `generate_videos.py` and `scheduling_bdia_ddim.py` files.
