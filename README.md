@@ -63,11 +63,11 @@ You can modify the parameters in the sample.py script to customize the video gen
 
 ### AnimateDiffPipeline
 
-The `AnimateDiffPipeline` is used to create the animation pipeline. It leverages the motion adapter and a pretrained model to generate the frames of the video based on the given text prompt.
+The `AnimateDiffPipeline` is used to create the animation pipeline. It leverages the motion adapter and a pretrained model to generate the frames of the video based on the given text prompt. This implementation is based on the work by Guo et al. [1][2].
 
 ### Custom BDIADDIMScheduler
 
-The custom `BDIADDIMScheduler` is an enhanced version of the `DDIMScheduler` which includes additional parameters for fine-tuning the denoising process. This scheduler is specifically designed to handle the Back-Door Inference and Adaptive Denoising (BDIA) modifications.
+The custom `BDIADDIMScheduler` is an enhanced version of the `DDIMScheduler` which includes additional parameters for fine-tuning the denoising process. This scheduler is specifically designed to handle the Back-Door Inference and Adaptive Denoising (BDIA) modifications. The base DDIM scheduler is based on the work by Song et al. [3].
 
 #### Implementation
 
@@ -84,3 +84,12 @@ Here's a brief overview of the implementation:
 To use the `BDIADDIMScheduler`, you need to set the `scheduler_type` parameter to `bdia-ddim` and provide a `gamma` value when calling the `generate_video` function in `sample.py`.
 
 For more details on the implementation, please refer to the `generate_videos.py` and `scheduling_bdia_ddim.py` files.
+
+## References
+
+[1] Y. Guo et al., "AnimateDiff: Animate Your Personalized Text-to-Image Diffusion Models without Specific Tuning," in International Conference on Learning Representations, 2024.
+
+[2] Y. Guo et al., "SparseCtrl: Adding Sparse Controls to Text-to-Video Diffusion Models," arXiv preprint arXiv:2311.16933, 2023.
+
+[3] J. Song, C. Meng, and S. Ermon, "Denoising Diffusion Implicit Models," arXiv:2010.02502, Oct. 2020.
+
