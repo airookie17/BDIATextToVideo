@@ -67,7 +67,7 @@ The `AnimateDiffPipeline` is used to create the animation pipeline. It leverages
 
 ### Custom BDIADDIMScheduler
 
-The custom `BDIADDIMScheduler` is an enhanced version of the `DDIMScheduler` which includes additional parameters for fine-tuning the denoising process. This scheduler is specifically designed to handle the Back-Door Inference and Adaptive Denoising (BDIA) modifications. The base DDIM scheduler is based on the work by Song et al. [3].
+The custom `BDIADDIMScheduler` is an enhanced version of the `DDIMScheduler` which includes additional parameters for fine-tuning the denoising process. This scheduler is specifically designed to handle the Bi-directional Integration Approximation (BDIA) modifications. The base DDIM scheduler is based on the work by Song et al. [3], while the BDIA process is based on the work by Zhang et al. [4].
 
 #### Implementation
 
@@ -93,3 +93,4 @@ For more details on the implementation, please refer to the `generate_videos.py`
 
 [3] J. Song, C. Meng, and S. Ermon, "Denoising Diffusion Implicit Models," arXiv:2010.02502, Oct. 2020.
 
+[4] G. Zhang, J. P. Lewis, and W. B. Kleijn, "Exact Diffusion Inversion via Bi-directional Integration Approximation," arXiv:2307.10829, 2023.
