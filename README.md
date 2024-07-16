@@ -51,34 +51,34 @@ To run the sample script, use the following command:
 
 You can modify the parameters in the sample.py script to customize the video generation. Here are the parameters you can change:
 
-- prompt: The text prompt to generate the video.
-- negative_prompt: The negative text prompt to avoid certain features in the video.
-- num_inference_steps: The number of inference steps.
-- guidance_scale: The guidance scale.
-- num_frames: The number of frames in the video.
-- seed: The random seed for reproducibility.
-- scheduler_type: The type of scheduler (ddim or bdia-ddim).
-- gamma: The gamma value for the BDIA-DDIM scheduler (only applicable if scheduler_type is bdia-ddim).
-- output_folder: The folder where the generated video will be saved.
-- video_name: The name of the output video file.
+- `prompt`: The text prompt to generate the video.
+- `negative_prompt`: The negative text prompt to avoid certain features in the video.
+- `num_inference_steps`: The number of inference steps.
+- `guidance_scale`: The guidance scale.
+- `num_frames`: The number of frames in the video.
+- `seed`: The random seed for reproducibility.
+- `scheduler_type`: The type of scheduler (ddim or bdia-ddim).
+- `gamma`: The gamma value for the BDIA-DDIM scheduler (only applicable if scheduler_type is bdia-ddim).
+- `output_folder`: The folder where the generated video will be saved.
+- `video_name`: The name of the output video file.
 
 ## Implementation Details
 
 ### AnimateDiffPipeline
 
-The AnimateDiffPipeline is used to create the animation pipeline. It leverages the motion adapter and a pretrained model to generate the frames of the video based on the given text prompt.
+The `AnimateDiffPipeline` is used to create the animation pipeline. It leverages the motion adapter and a pretrained model to generate the frames of the video based on the given text prompt.
 
 ### Custom BDIADDIMScheduler
 
-The custom BDIADDIMScheduler is an enhanced version of the DDIMScheduler which includes additional parameters for fine-tuning the denoising process. This scheduler is specifically designed to handle the Back-Door Inference and Adaptive Denoising (BDIA) modifications.
+The custom `BDIADDIMScheduler` is an enhanced version of the `DDIMScheduler` which includes additional parameters for fine-tuning the denoising process. This scheduler is specifically designed to handle the Back-Door Inference and Adaptive Denoising (BDIA) modifications.
 
 #### Implementation
 
-The BDIADDIMScheduler is implemented in the scheduling_bdia_ddim.py file located in the diffusers folder. It extends the DDIMScheduler and includes additional logic for the BDIA modifications.
+The BDIADDIMScheduler is implemented in the `scheduling_bdia_ddim.py` file located in the `diffusers` folder. It extends the `DDIMScheduler` and includes additional logic for the BDIA modifications.
 
 Here's a brief overview of the implementation:
 
-1. **Initialization**: The scheduler is initialized with an additional gamma parameter, which controls the influence of the BDIA modifications.
+1. **Initialization**: The scheduler is initialized with an additional `gamma` parameter, which controls the influence of the BDIA modifications.
 2. **Step Function**: The step function is overridden to include the BDIA logic, which adjusts the previous sample based on the current and last denoised samples.
-3. **Set Timesteps**: The set_timesteps function is also overridden to reset the state for each new denoising process.
+3. **Set Timesteps**: The `set_timesteps` function is also overridden to reset the state for each new denoising process.
 
