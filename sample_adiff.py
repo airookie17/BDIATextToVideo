@@ -1,12 +1,8 @@
-
-import os
 import subprocess
 
-def install_packages():
-    subprocess.run(['pip', 'install', 'torch', 'torchaudio', 'torchvision', 'accelerate'], check=True)
-    subprocess.run(['pip', 'install', '-e', './diffusers'], check=True)
 
-def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale, num_frames, seed, scheduler_type, gamma, output_folder, video_name):
+def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale, num_frames, seed, scheduler_type,
+                   gamma, output_folder, video_name):
     command = [
         'python', 'generate_videos_adiff.py',
         '--prompt', prompt,
@@ -23,10 +19,8 @@ def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale,
         command.extend(['--gamma', str(gamma)])
     subprocess.run(command, check=True)
 
+
 if __name__ == "__main__":
-    # Install required packages
-    install_packages()
-    
     # Define video generation parameters
     prompt = "a rabbit eating a carrot in a rainforest, masterpiece, best quality, highlydetailed, ultradetailed"
     negative_prompt = "bad quality, worse quality"
