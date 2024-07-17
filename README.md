@@ -5,7 +5,7 @@ This repository contains a project for generating animated videos from text prom
 ## Contents
 
 - `diffusers/`: Custom diffusers library.
-- `videos_adiff/` and `videos_sd`: Folders where generated videos are saved.
+- `videos_adiff/` and `videos_sd/`: Folders where generated videos are saved.
 - `generate_videos_adiff.py`: Script to generate videos using `AnimateDiffPipeline` with specified parameters.
 - `generate_videos_sd.py`: Script to generate videos using the `TextToVideoSDPipeline` with specified parameters.
 - `sample_adiff.py`: Script to install dependencies and run `generate_videos_adiff.py` with default parameters.
