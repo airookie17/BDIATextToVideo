@@ -8,7 +8,7 @@ def install_packages():
 
 def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale, num_frames, seed, scheduler_type, gamma, output_folder, video_name):
     command = [
-        'python', 'generate_videos.py',
+        'python', 'generate_videos_adiff.py',
         '--prompt', prompt,
         '--negative_prompt', negative_prompt,
         '--num_inference_steps', str(num_inference_steps),
