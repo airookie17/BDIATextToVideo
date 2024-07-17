@@ -97,7 +97,7 @@ The BDIADDIMScheduler is implemented in the `scheduling_bdia_ddim.py` file locat
 Here's a brief overview of the implementation:
 
 1. **Initialization**: The scheduler is initialized with an additional `gamma` parameter, which controls the influence of the BDIA modifications.
-2. **Step Function**: The step function is overridden to include the BDIA logic, which adjusts the previous sample based on the current and last denoised samples.
+2. **Step Function**: The `step` function is overridden to include the BDIA logic, which adjusts the previous sample based on the current and last denoised samples.
 3. **Set Timesteps**: The `set_timesteps` function is also overridden to reset the state for each new denoising process.
 
 ### Example Usage
