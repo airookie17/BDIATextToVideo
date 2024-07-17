@@ -3,9 +3,9 @@ import subprocess
 # Define the parameters
 prompts = ["An Astronaut riding a horse"]
 num_frames = 24
-num_inference_steps = 10
-seed = 0
-gamma = 0.5
+num_inference_steps = 25
+seed = 42
+gamma = 0.7
 
 # Construct the command to run the generate_videos_sd.py script
 command = [
