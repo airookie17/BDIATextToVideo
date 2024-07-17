@@ -6,8 +6,10 @@ This repository contains a project for generating animated videos from text prom
 
 - `diffusers/`: Custom diffusers library.
 - `videos/`: Folder where generated videos are saved.
-- `generate_videos.py`: Script to generate videos using specified parameters.
-- `sample.py`: Script to install dependencies and run `generate_videos.py` with default parameters.
+- `generate_videos_adiff.py`: Script to generate videos using `AnimateDiffPipeline` with specified parameters.
+- `generate_videos_sd.py`: Script to generate videos using the `TextToVideoSDPipeline` with specified parameters.
+- `sample_adiff.py`: Script to install dependencies and run `generate_videos_adiff.py` with default parameters.
+- `sample_sd.py`: Script to generate videos using `generate_videos_sd.py` with default parameters.
 
 ## Setup
 
@@ -35,16 +37,20 @@ This repository contains a project for generating animated videos from text prom
 
 ## Usage
 
-### Running the Sample Script
+### AnimateDiffPipeline
 
-The sample.py script installs the necessary libraries, sets up the environment, and runs the `generate_videos.py` script with default parameters.
+The `AnimateDiffPipeline` is used to create one of the animation pipelines. It leverages the motion adapter and a pretrained model to generate the frames of the video based on the given text prompt. This implementation is based on the work by Guo et al. [1][2].
+
+#### Running the Sample Script
+
+The `sample_adiff.py` script installs the necessary libraries, sets up the environment, and runs the `generate_videos_adiff.py` script with default parameters.
 
 To run the sample script, use the following command:
 
    ```bash
-   python sample.py
+   python sample_adiff.py
 ```
-## Modifying Parameters
+#### Modifying Parameters
 
 You can modify the parameters in the sample.py script to customize the video generation. Here are the parameters you can change:
 
@@ -59,13 +65,28 @@ You can modify the parameters in the sample.py script to customize the video gen
 - `output_folder`: The folder where the generated video will be saved.
 - `video_name`: The name of the output video file.
 
-## Implementation Details
+### TextToVideoSDPipeline
 
-### AnimateDiffPipeline
+The `TextToVideoSDPipeline` is used to generate videos using the Stable Diffusion model. It is an alternative to the `AnimateDiffPipeline` and focuses on leveraging the text-to-video model provided by `damo-vilab`. This pipeline uses both the DDIM scheduler and a custom `BDIADDIMScheduler` for video generation. The Text-To-Video model is based on the work by Wang et al. [5].
 
-The `AnimateDiffPipeline` is used to create the animation pipeline. It leverages the motion adapter and a pretrained model to generate the frames of the video based on the given text prompt. This implementation is based on the work by Guo et al. [1][2].
+#### Running the sample script for TextToVideoSDPipeline
 
-### Custom BDIADDIMScheduler
+The `sample_sd.py` script runs the `generate_videos_sd.py` script to generate videos using the `TextToVideoSDPipeline`.
+
+To run the sample script, use the following command:
+
+   ```bash
+   python sample_sd.py
+```
+#### Modifying Parameters
+
+- `prompts`: The text prompts to generate the video.
+- `num_frames`: The number of frames in the video.
+- `num_inference_steps`: The number of inference steps.
+- `seed`: The random seed for reproducibility.
+- `gamma`: The gamma value for the BDIA-DDIM scheduler.
+
+## Custom BDIADDIMScheduler
 
 The custom `BDIADDIMScheduler` is an enhanced version of the `DDIMScheduler` which includes additional parameters for fine-tuning the denoising process. This scheduler is specifically designed to handle the Bi-directional Integration Approximation (BDIA) modifications. The base DDIM scheduler is based on the work by Song et al. [3], while the BDIA process is based on the work by Zhang et al. [4].
 
@@ -81,9 +102,9 @@ Here's a brief overview of the implementation:
 
 ### Example Usage
 
-To use the `BDIADDIMScheduler`, you need to set the `scheduler_type` parameter to `bdia-ddim` and provide a `gamma` value when calling the `generate_video` function in `sample.py`.
+To use the `BDIADDIMScheduler`, you need to set the `scheduler_type` parameter to `bdia-ddim` and provide a `gamma` value when calling the `generate_video` function in both `sample_adiff.py` and `sample_sd.py`.
 
-For more details on the implementation, please refer to the `generate_videos.py` and `scheduling_bdia_ddim.py` files.
+For more details on the implementation, please refer to the `generate_videos_adiff.py` and `scheduling_bdia_ddim.py` files.
 
 ## References
 
@@ -94,3 +115,5 @@ For more details on the implementation, please refer to the `generate_videos.py`
 [3] J. Song, C. Meng, and S. Ermon, "Denoising Diffusion Implicit Models," arXiv:2010.02502, Oct. 2020.
 
 [4] G. Zhang, J. P. Lewis, and W. B. Kleijn, "Exact Diffusion Inversion via Bi-directional Integration Approximation," arXiv:2307.10829, 2023.
+
+[5] J. Wang, H. Yuan, D. Chen, Y. Zhang, X. Wang, and S. Zhang, "ModelScope Text-to-Video Technical Report," arXiv preprint arXiv:2308.06571, 2023.
