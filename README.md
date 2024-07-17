@@ -90,7 +90,7 @@ To run the sample script, use the following command:
 
 The custom `BDIADDIMScheduler` is an enhanced version of the `DDIMScheduler` which includes additional parameters for fine-tuning the denoising process. This scheduler is specifically designed to handle the Bi-directional Integration Approximation (BDIA) modifications. The base DDIM scheduler is based on the work by Song et al. [3], while the BDIA process is based on the work by Zhang et al. [4].
 
-#### Implementation
+### Implementation
 
 The BDIADDIMScheduler is implemented in the `scheduling_bdia_ddim.py` file located in the `diffusers` folder. It extends the `DDIMScheduler` and includes additional logic for the BDIA modifications.
 
