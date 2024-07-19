@@ -1,5 +1,4 @@
 import subprocess
-import os
 
 
 def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale, num_frames, seed, scheduler_type,
@@ -59,8 +58,3 @@ if __name__ == "__main__":
         video_name="rabbit_hopping_bdia_ddim"
     )
 
-    # Running VMAF assessment
-    print("Running VMAF assessment...")
-    subprocess.run(['ffmpeg', '-i', os.path.join(output_folder, "rabbit_hopping_ddim.mp4"),
-                    '-i', os.path.join(output_folder, "rabbit_hopping_bdia_ddim.mp4"),
-                    '-lavfi', 'libvmaf="model_path=/usr/share/model/vmaf_v0.6.1.pkl"', '-f', 'null', '-'])
