@@ -15,4 +15,3 @@ torchvision~=0.18.1
 opencv-python~=4.10.0.84
 setuptools~=69.5.1
 scikit-image
--e ./diffusers
