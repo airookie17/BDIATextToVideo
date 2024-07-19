@@ -1,5 +1,4 @@
 import subprocess
-from assessment import assess_videos
 import os
 
 
@@ -24,7 +23,8 @@ def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale,
 
 if __name__ == "__main__":
     # Define video generation parameters
-    prompt = "a panda eating a bamboo in an enchanted forest, masterpiece, best quality, highlydetailed, ultradetailed"
+    prompt = ("A rabbit hopping across a grass field on a sunny day, masterpiece, best quality, highlydetailed, "
+              "ultradetailed")
     negative_prompt = "bad quality, worse quality"
     num_inference_steps = 40
     guidance_scale = 7.5
@@ -42,7 +42,7 @@ if __name__ == "__main__":
         scheduler_type="ddim",
         gamma=0.0,  # Gamma is not used in DDIM
         output_folder=output_folder,
-        video_name="panda_eating_bamboo_ddim"
+        video_name="rabbit_hopping_ddim"
     )
 
     # Generate video with BDIA-DDIM scheduler
@@ -56,21 +56,11 @@ if __name__ == "__main__":
         scheduler_type="bdia-ddim",
         gamma=1.0,
         output_folder=output_folder,
-        video_name="panda_eating_bamboo_bdia_ddim"
+        video_name="rabbit_hopping_bdia_ddim"
     )
 
-    # Assess the generated videos
-    # assessment_results = assess_videos(
-    #     video1_path=os.path.join(output_folder, "panda_eating_bamboo_ddim.mp4"),
-    #     video2_path=os.path.join(output_folder, "panda_eating_bamboo_bdia_ddim.mp4")
-    # )
-    #
-    # print("Assessment Results:")
-    # print(
-    #     f"Temporal Consistency - DDIM: {assessment_results['temporal_consistency']['video1']}, BDIA-DDIM: {assessment_results['temporal_consistency']['video2']}")
-    # print(f"LPIPS - DDIM: {assessment_results['lpips']['video1']}, BDIA-DDIM: {assessment_results['lpips']['video2']}")
-
+    # Running VMAF assessment
     print("Running VMAF assessment...")
-    subprocess.run(['ffmpeg', '-i', os.path.join(output_folder, "panda_eating_bamboo_ddim.mp4"),
-                    '-i', os.path.join(output_folder, "panda_eating_bamboo_bdia_ddim.mp4"),
+    subprocess.run(['ffmpeg', '-i', os.path.join(output_folder, "rabbit_hopping_ddim.mp4"),
+                    '-i', os.path.join(output_folder, "rabbit_hopping_bdia_ddim.mp4"),
                     '-lavfi', 'libvmaf="model_path=/usr/share/model/vmaf_v0.6.1.pkl"', '-f', 'null', '-'])
