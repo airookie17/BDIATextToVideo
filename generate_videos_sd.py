@@ -5,7 +5,7 @@ from diffusers import DiffusionPipeline, DDIMScheduler
 from diffusers.schedulers.scheduling_bdia_ddim import BDIADDIMScheduler
 from diffusers.utils import export_to_video
 
-def generate_video(scheduler, prompt, num_frames, num_inference_steps, seed, output_folder, video_name):
+def generate_video(prompt, num_inference_steps, num_frames, seed, scheduler_type="ddim", gamma=0.5, output_folder="", video_name=""):
     # Set the seed for reproducibility
     torch.manual_seed(seed)
 
@@ -13,6 +13,13 @@ def generate_video(scheduler, prompt, num_frames, num_inference_steps, seed, out
     pipe = DiffusionPipeline.from_pretrained("damo-vilab/text-to-video-ms-1.7b", torch_dtype=torch.float16)
 
     # Set the scheduler
+    if scheduler_type == "ddim":
+        scheduler = DDIMScheduler.from_pretrained("damo-vilab/text-to-video-ms-1.7b", subfolder="scheduler")
+    elif scheduler_type == "bdia-ddim":
+        scheduler = BDIADDIMScheduler.from_config(scheduler.config, gamma=gamma)
+    else:
+        raise ValueError("Invalid scheduler_type. Choose 'ddim' or 'bdia-ddim'.")
+
     pipe.scheduler = scheduler
 
     pipe.enable_model_cpu_offload()
@@ -44,55 +51,28 @@ def generate_video(scheduler, prompt, num_frames, num_inference_steps, seed, out
 
     return video_path
 
-def process_prompts(prompts, num_frames, num_inference_steps, seed, gamma=1.0):
-    # Create the base output folder
-    base_output_folder = "./videos_sd/"
-    os.makedirs(base_output_folder, exist_ok=True)
-
-    # Create subfolders for each scheduler
-    ddim_folder = os.path.join(base_output_folder, "ddim")
-    bdia_ddim_folder = os.path.join(base_output_folder, "bdia_ddim")
-    os.makedirs(ddim_folder, exist_ok=True)
-    os.makedirs(bdia_ddim_folder, exist_ok=True)
-
-    # Initialize schedulers
-    ddim_scheduler = DDIMScheduler.from_pretrained("damo-vilab/text-to-video-ms-1.7b", subfolder="scheduler")
-    bdia_ddim_scheduler = BDIADDIMScheduler.from_config(ddim_scheduler.config, gamma=gamma)
-
-    for i, prompt in enumerate(prompts):
-        # Generate video with DDIMScheduler
-        ddim_path = generate_video(
-            ddim_scheduler,
-            prompt,
-            num_frames,
-            num_inference_steps,
-            seed,
-            ddim_folder,
-            f"ddim_{i+1}"
-        )
-        print(f"DDIM video {i+1} saved to: {ddim_path}")
-
-        # Generate video with BDIADDIMScheduler
-        bdia_ddim_path = generate_video(
-            bdia_ddim_scheduler,
-            prompt,
-            num_frames,
-            num_inference_steps,
-            seed,
-            bdia_ddim_folder,
-            f"bdia_{i+1}"
-        )
-        print(f"BDIA-DDIM video {i+1} saved to: {bdia_ddim_path}")
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate videos using diffusion models.")
-
-    parser.add_argument("--prompts", type=str, nargs='+', required=True, help="List of prompts for video generation.")
-    parser.add_argument("--num_frames", type=int, default=16, help="Number of frames in the video.")
-    parser.add_argument("--num_inference_steps", type=int, default=40, help="Number of inference steps.")
-    parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility.")
-    parser.add_argument("--gamma", type=float, default=1.0, help="Gamma value for the BDIA-DDIM scheduler.")
+    parser.add_argument('--prompt', type=str, required=True, help='Text prompt for video generation')
+    parser.add_argument('--num_inference_steps', type=int, required=True, help='Number of inference steps')
+    parser.add_argument('--num_frames', type=int, required=True, help='Number of frames')
+    parser.add_argument('--seed', type=int, required=True, help='Random seed')
+    parser.add_argument('--scheduler_type', type=str, required=True, choices=['ddim', 'bdia-ddim'], help='Scheduler type')
+    parser.add_argument('--gamma', type=float, default=0.5, help='Gamma value for BDIA-DDIM scheduler')
+    parser.add_argument('--output_folder', type=str, required=True, help='Output folder to save the video')
+    parser.add_argument('--video_name', type=str, required=True, help='Name of the output video file')
 
     args = parser.parse_args()
 
-    process_prompts(args.prompts, args.num_frames, args.num_inference_steps, args.seed, args.gamma)
+    video_path = generate_video(
+        prompt=args.prompt,
+        num_inference_steps=args.num_inference_steps,
+        num_frames=args.num_frames,
+        seed=args.seed,
+        scheduler_type=args.scheduler_type,
+        gamma=args.gamma,
+        output_folder=args.output_folder,
+        video_name=args.video_name
+    )
+
+    print(f"Video saved to: {video_path}")

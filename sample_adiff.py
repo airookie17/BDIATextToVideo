@@ -1,5 +1,6 @@
 import subprocess
 import cv2
+import sys
 from torchvision.models import inception_v3
 from assessment import temporal_consistency, inception_score, fid_score
 
@@ -108,3 +109,5 @@ if __name__ == "__main__":
     print(f"Inception Score: {bdia_ddim_scores[1]}")
 
     print(f"\nFID Score between DDIM and BDIA-DDIM: {fid}")
+
+    sys.exit(0)
