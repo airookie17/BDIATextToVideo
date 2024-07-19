@@ -29,7 +29,7 @@ if __name__ == "__main__":
     num_inference_steps = 40
     guidance_scale = 7.5
     seed = 0
-    output_folder = "./videos"
+    output_folder = "./videos_adiff"
 
     # Generate video with DDIM scheduler
     generate_video(
