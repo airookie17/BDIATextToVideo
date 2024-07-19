@@ -30,10 +30,9 @@ This repository contains a project for generating animated videos from text prom
 2. **Install the required packages**:
   
    ```bash
-   pip install torch torchaudio torchvision accelerate numpy opencv-python lpips
-   cd diffusers
-   pip install -e .
-   cd ..
+   pip install -r requirements.txt
+   ```
+   This also installs the custom `diffusers` library with the added `BDIADDIMScheduler` in it.
 
 ## Usage
 
