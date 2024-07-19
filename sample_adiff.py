@@ -1,4 +1,11 @@
+# sample_adiff.py
+
 import subprocess
+import cv2
+import torch
+from sentence_transformers import SentenceTransformer
+from torchvision.models import inception_v3
+from assessment import temporal_consistency, inception_score, prompt_similarity, fid_score
 
 
 def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale, num_frames, seed, scheduler_type,
@@ -18,6 +25,35 @@ def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale,
     if scheduler_type == "bdia-ddim":
         command.extend(['--gamma', str(gamma)])
     subprocess.run(command, check=True)
+
+
+def load_video(path):
+    cap = cv2.VideoCapture(path)
+    frames = []
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+        frames.append(frame)
+    cap.release()
+    return frames
+
+
+def assess_video(video_path, prompt):
+    video = load_video(video_path)
+
+    # Temporal Consistency
+    tc_score = temporal_consistency(video)
+
+    # Inception Score
+    inception_model = inception_v3(pretrained=True, transform_input=False).eval()
+    is_score = inception_score(video, inception_model)
+
+    # Prompt Similarity
+    sentence_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+    ps_score = prompt_similarity(video, prompt, sentence_model)
+
+    return tc_score, is_score, ps_score
 
 
 if __name__ == "__main__":
@@ -58,3 +94,27 @@ if __name__ == "__main__":
         video_name="rabbit_hopping_bdia_ddim"
     )
 
+    # Assess videos
+    ddim_path = f"{output_folder}/rabbit_hopping_ddim.mp4"
+    bdia_ddim_path = f"{output_folder}/rabbit_hopping_bdia_ddim.mp4"
+
+    ddim_scores = assess_video(ddim_path, prompt)
+    bdia_ddim_scores = assess_video(bdia_ddim_path, prompt)
+
+    # Calculate FID score
+    ddim_video = load_video(ddim_path)
+    bdia_ddim_video = load_video(bdia_ddim_path)
+    inception_model = inception_v3(pretrained=True, transform_input=False).eval()
+    fid = fid_score(ddim_video, bdia_ddim_video, inception_model)
+
+    print("DDIM Scores:")
+    print(f"Temporal Consistency: {ddim_scores[0]}")
+    print(f"Inception Score: {ddim_scores[1]}")
+    print(f"Prompt Similarity: {ddim_scores[2]}")
+
+    print("\nBDIA-DDIM Scores:")
+    print(f"Temporal Consistency: {bdia_ddim_scores[0]}")
+    print(f"Inception Score: {bdia_ddim_scores[1]}")
+    print(f"Prompt Similarity: {bdia_ddim_scores[2]}")
+
+    print(f"\nFID Score between DDIM and BDIA-DDIM: {fid}")
