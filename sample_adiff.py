@@ -69,6 +69,7 @@ if __name__ == "__main__":
     # print(
     #     f"Temporal Consistency - DDIM: {assessment_results['temporal_consistency']['video1']}, BDIA-DDIM: {assessment_results['temporal_consistency']['video2']}")
     # print(f"LPIPS - DDIM: {assessment_results['lpips']['video1']}, BDIA-DDIM: {assessment_results['lpips']['video2']}")
+
     print("Running VMAF assessment...")
     subprocess.run(['ffmpeg', '-i', os.path.join(output_folder, "panda_eating_bamboo_ddim.mp4"),
                     '-i', os.path.join(output_folder, "panda_eating_bamboo_bdia_ddim.mp4"),
