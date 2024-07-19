@@ -1,10 +1,11 @@
 # sample_adiff.py
 
 import subprocess
+
 import cv2
-import torch
 from sentence_transformers import SentenceTransformer
 from torchvision.models import inception_v3
+
 from assessment import temporal_consistency, inception_score, prompt_similarity, fid_score
 
 
@@ -58,8 +59,7 @@ def assess_video(video_path, prompt):
 
 if __name__ == "__main__":
     # Define video generation parameters
-    prompt = ("A rabbit hopping across a grass field on a sunny day, masterpiece, best quality, highlydetailed, "
-              "ultradetailed")
+    prompt = "A cat wearing glasses reading a book, masterpiece, best quality, highly detailed, ultradetailed"
     negative_prompt = "bad quality, worse quality"
     num_inference_steps = 40
     guidance_scale = 7.5
@@ -77,7 +77,7 @@ if __name__ == "__main__":
         scheduler_type="ddim",
         gamma=0.0,  # Gamma is not used in DDIM
         output_folder=output_folder,
-        video_name="rabbit_hopping_ddim"
+        video_name="cat_reading_ddim"
     )
 
     # Generate video with BDIA-DDIM scheduler
@@ -91,12 +91,12 @@ if __name__ == "__main__":
         scheduler_type="bdia-ddim",
         gamma=1.0,
         output_folder=output_folder,
-        video_name="rabbit_hopping_bdia_ddim"
+        video_name="cat_reading_bdia_ddim"
     )
 
     # Assess videos
-    ddim_path = f"{output_folder}/rabbit_hopping_ddim.mp4"
-    bdia_ddim_path = f"{output_folder}/rabbit_hopping_bdia_ddim.mp4"
+    ddim_path = f"{output_folder}/cat_reading_ddim.mp4"
+    bdia_ddim_path = f"{output_folder}/cat_reading_bdia_ddim.mp4"
 
     ddim_scores = assess_video(ddim_path, prompt)
     bdia_ddim_scores = assess_video(bdia_ddim_path, prompt)
