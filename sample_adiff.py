@@ -59,7 +59,8 @@ def assess_video(video_path, prompt):
 
 if __name__ == "__main__":
     # Define video generation parameters
-    prompt = "A cat wearing glasses reading a book, masterpiece, best quality, highly detailed, ultradetailed"
+    prompt = ("A dog with headphones nodding head while listening to music, masterpiece, best quality, "
+              "highly detailed, ultradetailed")
     negative_prompt = "bad quality, worse quality"
     num_inference_steps = 40
     guidance_scale = 7.5
@@ -77,7 +78,7 @@ if __name__ == "__main__":
         scheduler_type="ddim",
         gamma=0.0,  # Gamma is not used in DDIM
         output_folder=output_folder,
-        video_name="cat_reading_ddim"
+        video_name="dog_listening_music_ddim"
     )
 
     # Generate video with BDIA-DDIM scheduler
@@ -91,13 +92,14 @@ if __name__ == "__main__":
         scheduler_type="bdia-ddim",
         gamma=1.0,
         output_folder=output_folder,
-        video_name="cat_reading_bdia_ddim"
+        video_name="dog_listening_music_bdia_ddim"
     )
 
     # Assess videos
-    ddim_path = f"{output_folder}/cat_reading_ddim.mp4"
-    bdia_ddim_path = f"{output_folder}/cat_reading_bdia_ddim.mp4"
+    ddim_path = f"{output_folder}/dog_listening_music_ddim.mp4"
+    bdia_ddim_path = f"{output_folder}/dog_listening_music_bdia_ddim.mp4"
 
+    # ... (rest of the code remains the same)
     ddim_scores = assess_video(ddim_path, prompt)
     bdia_ddim_scores = assess_video(bdia_ddim_path, prompt)
 
