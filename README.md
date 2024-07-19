@@ -42,7 +42,7 @@ The `AnimateDiffPipeline` is used to create one of the animation pipelines. It l
 
 #### Running the Sample Script
 
-The `sample_adiff.py` script installs the necessary libraries, sets up the environment, and runs the `generate_videos_adiff.py` script with default parameters.
+The `sample_adiff.py` script installs the necessary libraries, sets up the environment, and runs the `generate_videos_adiff.py` script with default parameters, and the output videos are saved to the `./videos_adiff` folder.
 
 To run the sample script, use the following command:
 
@@ -70,7 +70,7 @@ The `TextToVideoSDPipeline` is used to generate videos using the Stable Diffusio
 
 #### Running the sample script for TextToVideoSDPipeline
 
-The `sample_sd.py` script runs the `generate_videos_sd.py` script to generate videos using the `TextToVideoSDPipeline`.
+The `sample_sd.py` script runs the `generate_videos_sd.py` script to generate videos using the `TextToVideoSDPipeline`, and the output videos are saved to the `./videos_sd` folder.
 
 To run the sample script, use the following command:
 
@@ -79,11 +79,14 @@ To run the sample script, use the following command:
 ```
 #### Modifying Parameters
 
-- `prompts`: The text prompts to generate the video.
-- `num_frames`: The number of frames in the video.
+- `prompt`: The text prompt to generate the video.
 - `num_inference_steps`: The number of inference steps.
+- `num_frames`: The number of frames in the video.
 - `seed`: The random seed for reproducibility.
-- `gamma`: The gamma value for the BDIA-DDIM scheduler.
+- `scheduler_type`: The type of scheduler (ddim or bdia-ddim).
+- `gamma`: The gamma value for the BDIA-DDIM scheduler (only applicable if scheduler_type is bdia-ddim).
+- `output_folder`: The folder where the generated video will be saved.
+- `video_name`: The name of the output video file.
 
 ## Custom BDIADDIMScheduler
 
