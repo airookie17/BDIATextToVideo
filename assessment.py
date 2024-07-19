@@ -1,14 +1,11 @@
 # assessment.py
 
-import numpy as np
 import cv2
-from skimage.metrics import structural_similarity as ssim
-from sentence_transformers import SentenceTransformer
+import numpy as np
 import torch
-from torchvision.transforms import Resize
-from torchvision.models import inception_v3
 from scipy.linalg import sqrtm
-from PIL import Image
+from skimage.metrics import structural_similarity as ssim
+from torchvision.transforms import Resize
 
 
 def temporal_consistency(video):
@@ -43,19 +40,19 @@ def inception_score(video, model):
     return np.mean(scores)
 
 
-def prompt_similarity(video, prompt, model):
-    """
-    Calculate similarity between video frames and the prompt.
-    """
-    prompt_embedding = model.encode(prompt)
-    similarities = []
-    for frame in video:
-        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame_embedding = model.encode(Image.fromarray(frame_rgb))
-        similarity = np.dot(prompt_embedding, frame_embedding) / (
-                    np.linalg.norm(prompt_embedding) * np.linalg.norm(frame_embedding))
-        similarities.append(similarity)
-    return np.mean(similarities)
+# def prompt_similarity(video, prompt, model):
+#     """
+#     Calculate similarity between video frames and the prompt.
+#     """
+#     prompt_embedding = model.encode(prompt)
+#     similarities = []
+#     for frame in video:
+#         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+#         frame_embedding = model.encode(Image.fromarray(frame_rgb))
+#         similarity = np.dot(prompt_embedding, frame_embedding) / (
+#                     np.linalg.norm(prompt_embedding) * np.linalg.norm(frame_embedding))
+#         similarities.append(similarity)
+#     return np.mean(similarities)
 
 
 def fid_score(video1, video2, model):

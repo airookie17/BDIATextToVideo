@@ -1,12 +1,7 @@
-# sample_adiff.py
-
 import subprocess
-
 import cv2
-from sentence_transformers import SentenceTransformer
 from torchvision.models import inception_v3
-
-from assessment import temporal_consistency, inception_score, prompt_similarity, fid_score
+from assessment import temporal_consistency, inception_score, fid_score
 
 
 def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale, num_frames, seed, scheduler_type,
@@ -40,7 +35,7 @@ def load_video(path):
     return frames
 
 
-def assess_video(video_path, prompt):
+def assess_video(video_path):
     video = load_video(video_path)
 
     # Temporal Consistency
@@ -50,11 +45,7 @@ def assess_video(video_path, prompt):
     inception_model = inception_v3(pretrained=True, transform_input=False).eval()
     is_score = inception_score(video, inception_model)
 
-    # Prompt Similarity
-    sentence_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
-    ps_score = prompt_similarity(video, prompt, sentence_model)
-
-    return tc_score, is_score, ps_score
+    return tc_score, is_score
 
 
 if __name__ == "__main__":
@@ -99,9 +90,8 @@ if __name__ == "__main__":
     ddim_path = f"{output_folder}/dog_listening_music_ddim.mp4"
     bdia_ddim_path = f"{output_folder}/dog_listening_music_bdia_ddim.mp4"
 
-    # ... (rest of the code remains the same)
-    ddim_scores = assess_video(ddim_path, prompt)
-    bdia_ddim_scores = assess_video(bdia_ddim_path, prompt)
+    ddim_scores = assess_video(ddim_path)
+    bdia_ddim_scores = assess_video(bdia_ddim_path)
 
     # Calculate FID score
     ddim_video = load_video(ddim_path)
@@ -112,11 +102,9 @@ if __name__ == "__main__":
     print("DDIM Scores:")
     print(f"Temporal Consistency: {ddim_scores[0]}")
     print(f"Inception Score: {ddim_scores[1]}")
-    print(f"Prompt Similarity: {ddim_scores[2]}")
 
     print("\nBDIA-DDIM Scores:")
     print(f"Temporal Consistency: {bdia_ddim_scores[0]}")
     print(f"Inception Score: {bdia_ddim_scores[1]}")
-    print(f"Prompt Similarity: {bdia_ddim_scores[2]}")
 
     print(f"\nFID Score between DDIM and BDIA-DDIM: {fid}")
