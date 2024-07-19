@@ -9,10 +9,10 @@ accelerate~=0.32.1
 transformers~=4.42.4
 safetensors~=0.4.3
 pyyaml~=6.0.1
-diffusers~=0.30.0.dev0
 scipy~=1.14.0
 torchvision~=0.18.1
 opencv-python~=4.10.0.84
 setuptools~=69.5.1
 scikit-image
 sentence-transformers
+-e ./diffusers
