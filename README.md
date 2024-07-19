@@ -30,7 +30,7 @@ This repository contains a project for generating animated videos from text prom
 2. **Install the required packages**:
   
    ```bash
-   pip install torch torchaudio torchvision accelerate
+   pip install torch torchaudio torchvision accelerate numpy opencv-python lpips
    cd diffusers
    pip install -e .
    cd ..
