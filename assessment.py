@@ -8,6 +8,7 @@ import torch
 from torchvision.transforms import Resize
 from torchvision.models import inception_v3
 from scipy.linalg import sqrtm
+from PIL import Image
 
 
 def temporal_consistency(video):
