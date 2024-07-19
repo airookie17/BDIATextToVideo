@@ -60,12 +60,16 @@ if __name__ == "__main__":
     )
 
     # Assess the generated videos
-    assessment_results = assess_videos(
-        video1_path=os.path.join(output_folder, "panda_eating_bamboo_ddim.mp4"),
-        video2_path=os.path.join(output_folder, "panda_eating_bamboo_bdia_ddim.mp4")
-    )
-
-    print("Assessment Results:")
-    print(
-        f"Temporal Consistency - DDIM: {assessment_results['temporal_consistency']['video1']}, BDIA-DDIM: {assessment_results['temporal_consistency']['video2']}")
-    print(f"LPIPS - DDIM: {assessment_results['lpips']['video1']}, BDIA-DDIM: {assessment_results['lpips']['video2']}")
+    # assessment_results = assess_videos(
+    #     video1_path=os.path.join(output_folder, "panda_eating_bamboo_ddim.mp4"),
+    #     video2_path=os.path.join(output_folder, "panda_eating_bamboo_bdia_ddim.mp4")
+    # )
+    #
+    # print("Assessment Results:")
+    # print(
+    #     f"Temporal Consistency - DDIM: {assessment_results['temporal_consistency']['video1']}, BDIA-DDIM: {assessment_results['temporal_consistency']['video2']}")
+    # print(f"LPIPS - DDIM: {assessment_results['lpips']['video1']}, BDIA-DDIM: {assessment_results['lpips']['video2']}")
+    print("Running VMAF assessment...")
+    subprocess.run(['ffmpeg', '-i', os.path.join(output_folder, "panda_eating_bamboo_ddim.mp4"),
+                    '-i', os.path.join(output_folder, "panda_eating_bamboo_bdia_ddim.mp4"),
+                    '-lavfi', 'libvmaf="model_path=/usr/share/model/vmaf_v0.6.1.pkl"', '-f', 'null', '-'])
