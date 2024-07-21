@@ -49,8 +49,7 @@ def assess_video(video_path):
 
 if __name__ == "__main__":
     # Define video generation parameters
-    prompt = ("A dog with headphones nodding head while listening to music, masterpiece, best quality, "
-              "highly detailed, ultradetailed")
+    prompt = "A dog with headphones nodding head while listening to music, masterpiece, best quality, highly detailed, ultradetailed"
     num_inference_steps = 40
     num_frames = 24
     seed = 0

@@ -16,7 +16,8 @@ def generate_video(prompt, num_inference_steps, num_frames, seed, scheduler_type
     if scheduler_type == "ddim":
         scheduler = DDIMScheduler.from_pretrained("damo-vilab/text-to-video-ms-1.7b", subfolder="scheduler")
     elif scheduler_type == "bdia-ddim":
-        scheduler = BDIADDIMScheduler.from_config(scheduler.config, gamma=gamma)
+        ddim_scheduler = DDIMScheduler.from_pretrained("damo-vilab/text-to-video-ms-1.7b", subfolder="scheduler")
+        scheduler = BDIADDIMScheduler.from_config(ddim_scheduler.config, gamma=gamma)
     else:
         raise ValueError("Invalid scheduler_type. Choose 'ddim' or 'bdia-ddim'.")
 
