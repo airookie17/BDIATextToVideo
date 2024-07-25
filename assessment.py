@@ -55,29 +55,29 @@ def inception_score(video, model):
 #     return np.mean(similarities)
 
 
-def fid_score(video1, video2, model):
-    """
-    Calculate FID score between two videos.
-    """
+# def fid_score(video1, video2, model):
+#     """
+#     Calculate FID score between two videos.
+#     """
 
-    def calculate_statistics(video):
-        features = []
-        for frame in video:
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            frame = Resize((299, 299))(torch.from_numpy(frame).permute(2, 0, 1).float() / 255.0).unsqueeze(0)
-            feature = model(frame).detach().cpu().numpy()
-            features.append(feature)
-        features = np.concatenate(features, axis=0)
-        mu = np.mean(features, axis=0)
-        sigma = np.cov(features, rowvar=False)
-        return mu, sigma
+#     def calculate_statistics(video):
+#         features = []
+#         for frame in video:
+#             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+#             frame = Resize((299, 299))(torch.from_numpy(frame).permute(2, 0, 1).float() / 255.0).unsqueeze(0)
+#             feature = model(frame).detach().cpu().numpy()
+#             features.append(feature)
+#         features = np.concatenate(features, axis=0)
+#         mu = np.mean(features, axis=0)
+#         sigma = np.cov(features, rowvar=False)
+#         return mu, sigma
 
-    mu1, sigma1 = calculate_statistics(video1)
-    mu2, sigma2 = calculate_statistics(video2)
+#     mu1, sigma1 = calculate_statistics(video1)
+#     mu2, sigma2 = calculate_statistics(video2)
 
-    diff = mu1 - mu2
-    covmean = sqrtm(sigma1.dot(sigma2))
-    if np.iscomplexobj(covmean):
-        covmean = covmean.real
-    fid = diff.dot(diff) + np.trace(sigma1 + sigma2 - 2 * covmean)
-    return fid
+#     diff = mu1 - mu2
+#     covmean = sqrtm(sigma1.dot(sigma2))
+#     if np.iscomplexobj(covmean):
+#         covmean = covmean.real
+#     fid = diff.dot(diff) + np.trace(sigma1 + sigma2 - 2 * covmean)
+#     return fid
