@@ -82,7 +82,7 @@ if __name__ == "__main__":
         num_frames=24,
         seed=seed,
         scheduler_type="bdia-ddim",
-        gamma=1.0,
+        gamma=0.5,
         output_folder=output_folder,
         video_name="dog_listening_music_bdia_ddim"
     )
