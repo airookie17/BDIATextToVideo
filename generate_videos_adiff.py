@@ -5,10 +5,18 @@ from diffusers import AnimateDiffPipeline, DDIMScheduler
 from diffusers.schedulers.scheduling_bdia_ddim import BDIADDIMScheduler
 from diffusers.utils import export_to_video
 import os
+import re
+
+
+def generate_video_name(prompt, scheduler_type):
+    # Extract first few words from the prompt
+    words = re.findall(r'\w+', prompt.lower())
+    name = '_'.join(words[:3])  # Use first 3 words
+    return f"{name}_{scheduler_type}"
 
 
 def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale, num_frames, seed,
-                   scheduler_type="ddim", gamma=0.5, output_folder="", video_name=""):
+                   scheduler_type="ddim", gamma=0.5):
     torch.manual_seed(seed)
     adapter = MotionAdapter.from_pretrained("guoyww/animatediff-motion-adapter-v1-5-2", torch_dtype=torch.float16)
     model_id = "SG161222/Realistic_Vision_V5.1_noVAE"
@@ -48,7 +56,11 @@ def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale,
         generator=torch.Generator("cpu").manual_seed(seed),
     )
     frames = output.frames[0]
+
+    output_folder = "./videos_adiff/"
     os.makedirs(output_folder, exist_ok=True)
+
+    video_name = generate_video_name(prompt, scheduler_type)
     video_path = export_to_video(frames, output_video_path=os.path.join(output_folder, f"{video_name}.mp4"))
     return video_path
 
@@ -63,7 +75,6 @@ if __name__ == "__main__":
     parser.add_argument('--num_frames', type=int, default=24, help='Number of frames')
     parser.add_argument('--seed', type=int, default=0, help='Random seed')
     parser.add_argument('--gamma', type=float, default=0.5, help='Gamma value for BDIA-DDIM scheduler')
-    parser.add_argument('--output_folder', type=str, default="./videos_adiff", help='Output folder to save the videos')
 
     args = parser.parse_args()
 
@@ -75,9 +86,7 @@ if __name__ == "__main__":
         guidance_scale=args.guidance_scale,
         num_frames=args.num_frames,
         seed=args.seed,
-        scheduler_type="ddim",
-        output_folder=args.output_folder,
-        video_name="video_ddim"
+        scheduler_type="ddim"
     )
 
     # Generate video with BDIA-DDIM scheduler
@@ -89,9 +98,7 @@ if __name__ == "__main__":
         num_frames=args.num_frames,
         seed=args.seed,
         scheduler_type="bdia-ddim",
-        gamma=args.gamma,
-        output_folder=args.output_folder,
-        video_name="video_bdia_ddim"
+        gamma=args.gamma
     )
 
     print(f"DDIM video saved to: {ddim_video_path}")
