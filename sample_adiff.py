@@ -2,7 +2,7 @@ import subprocess
 import cv2
 import sys
 from torchvision.models import inception_v3
-from assessment import temporal_consistency, inception_score, fid_score
+# from assessment import temporal_consistency, inception_score, fid_score
 
 
 def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale, num_frames, seed, scheduler_type,
@@ -36,17 +36,17 @@ def load_video(path):
     return frames
 
 
-def assess_video(video_path):
-    video = load_video(video_path)
-
-    # Temporal Consistency
-    tc_score = temporal_consistency(video)
-
-    # Inception Score
-    inception_model = inception_v3(pretrained=True, transform_input=False).eval()
-    is_score = inception_score(video, inception_model)
-
-    return tc_score, is_score
+# def assess_video(video_path):
+#     video = load_video(video_path)
+#
+#     # Temporal Consistency
+#     tc_score = temporal_consistency(video)
+#
+#     # Inception Score
+#     inception_model = inception_v3(pretrained=True, transform_input=False).eval()
+#     is_score = inception_score(video, inception_model)
+#
+#     return tc_score, is_score
 
 
 if __name__ == "__main__":
@@ -91,23 +91,23 @@ if __name__ == "__main__":
     ddim_path = f"{output_folder}/dog_listening_music_ddim.mp4"
     bdia_ddim_path = f"{output_folder}/dog_listening_music_bdia_ddim.mp4"
 
-    ddim_scores = assess_video(ddim_path)
-    bdia_ddim_scores = assess_video(bdia_ddim_path)
-
-    # Calculate FID score
-    ddim_video = load_video(ddim_path)
-    bdia_ddim_video = load_video(bdia_ddim_path)
-    inception_model = inception_v3(pretrained=True, transform_input=False).eval()
-    fid = fid_score(ddim_video, bdia_ddim_video, inception_model)
-
-    print("DDIM Scores:")
-    print(f"Temporal Consistency: {ddim_scores[0]}")
-    print(f"Inception Score: {ddim_scores[1]}")
-
-    print("\nBDIA-DDIM Scores:")
-    print(f"Temporal Consistency: {bdia_ddim_scores[0]}")
-    print(f"Inception Score: {bdia_ddim_scores[1]}")
-
-    print(f"\nFID Score between DDIM and BDIA-DDIM: {fid}")
+    # ddim_scores = assess_video(ddim_path)
+    # bdia_ddim_scores = assess_video(bdia_ddim_path)
+    #
+    # # Calculate FID score
+    # ddim_video = load_video(ddim_path)
+    # bdia_ddim_video = load_video(bdia_ddim_path)
+    # inception_model = inception_v3(pretrained=True, transform_input=False).eval()
+    # fid = fid_score(ddim_video, bdia_ddim_video, inception_model)
+    #
+    # print("DDIM Scores:")
+    # print(f"Temporal Consistency: {ddim_scores[0]}")
+    # print(f"Inception Score: {ddim_scores[1]}")
+    #
+    # print("\nBDIA-DDIM Scores:")
+    # print(f"Temporal Consistency: {bdia_ddim_scores[0]}")
+    # print(f"Inception Score: {bdia_ddim_scores[1]}")
+    #
+    # print(f"\nFID Score between DDIM and BDIA-DDIM: {fid}")
 
     sys.exit(0)
