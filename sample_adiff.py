@@ -51,7 +51,7 @@ def load_video(path):
 
 if __name__ == "__main__":
     # Define video generation parameters
-    prompt = ("A dog with headphones nodding head while listening to music, masterpiece, best quality, "
+    prompt = ("A cat with glasses reading a book, masterpiece, best quality, "
               "highly detailed, ultradetailed")
     negative_prompt = "bad quality, worse quality"
     num_inference_steps = 40
