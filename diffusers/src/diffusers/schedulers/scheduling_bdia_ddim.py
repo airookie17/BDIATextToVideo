@@ -1,6 +1,5 @@
 from .scheduling_ddim import DDIMScheduler, DDIMSchedulerOutput
 
-
 class BDIADDIMScheduler(DDIMScheduler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -15,21 +14,19 @@ class BDIADDIMScheduler(DDIMScheduler):
         alpha_prod_t = self.alphas_cumprod[timestep]
         alpha_prod_t_prev = self.alphas_cumprod[prev_timestep] if prev_timestep >= 0 else self.final_alpha_cumprod
         beta_prod_t = 1 - alpha_prod_t
-        pred_original_sample = (sample - beta_prod_t ** 0.5 * model_output) / alpha_prod_t ** 0.5
-        pred_sample_direction = (1 - alpha_prod_t_prev) ** 0.5 * model_output
+        pred_original_sample = (sample - beta_prod_t ** (0.5) * model_output) / alpha_prod_t ** (0.5)
+        pred_sample_direction = (1 - alpha_prod_t_prev) ** (0.5) * model_output
+        prev_sample = alpha_prod_t_prev ** (0.5) * pred_original_sample + pred_sample_direction
 
-        a_last = self.alphas_cumprod[step_index + 1] if step_index < len(
-            self.timesteps) - 1 else self.final_alpha_cumprod
-
+        # BDIA modifications
         if self.x_last is not None:
+            alpha_prod_t_last = self.alphas_cumprod[self.t_last] if self.t_last is not None else alpha_prod_t
             prev_sample = (
-                    self.x_last
-                    - (1 - self.gamma) * (self.x_last - sample)
-                    - self.gamma * (a_last ** 0.5 * pred_original_sample + (1 - a_last) ** 0.5 * model_output - sample)
-                    + alpha_prod_t_prev ** 0.5 * pred_original_sample + pred_sample_direction - sample
+                self.x_last
+                - (1 - self.gamma) * (self.x_last - sample)
+                - self.gamma * (alpha_prod_t_last ** 0.5 * pred_original_sample + (1 - alpha_prod_t_last) ** 0.5 * model_output - sample)
+                + alpha_prod_t_prev ** 0.5 * pred_original_sample + pred_sample_direction - sample
             )
-        else:
-            prev_sample = alpha_prod_t_prev ** 0.5 * pred_original_sample + pred_sample_direction
 
         self.x_last = sample
         self.t_last = timestep
