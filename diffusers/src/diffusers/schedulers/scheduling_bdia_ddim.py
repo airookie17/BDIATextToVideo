@@ -14,6 +14,7 @@ class BDIADDIMScheduler(DDIMScheduler):
     def set_timesteps(self, num_inference_steps: int):
         self.num_inference_steps = num_inference_steps
         self.timesteps = np.arange(0, self.num_train_timesteps, self.num_train_timesteps // self.num_inference_steps)[::-1]
+        self.timesteps = torch.tensor(self.timesteps, device=device)
         self.x_last = None
         self.t_last = None
 
