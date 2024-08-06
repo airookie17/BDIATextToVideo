@@ -1,6 +1,6 @@
-from .scheduling_ddim import DDIMScheduler, DDIMSchedulerOutput
 import torch
 import numpy as np
+from diffusers.schedulers import DDIMScheduler, DDIMSchedulerOutput
 from typing import Optional, Union, Tuple, List
 
 
@@ -11,10 +11,10 @@ class BDIADDIMScheduler(DDIMScheduler):
         self.t_last = None  # Tracks the last timestep
         self.gamma = kwargs.get('gamma', 0.5)  # Default gamma value
 
-    def set_timesteps(self, num_inference_steps: int):
+    def set_timesteps(self, num_inference_steps: int, device: torch.device = None):
         self.num_inference_steps = num_inference_steps
         self.timesteps = np.arange(0, self.num_train_timesteps, self.num_train_timesteps // self.num_inference_steps)[::-1]
-        self.timesteps = torch.tensor(self.timesteps, device=device)
+        self.timesteps = torch.tensor(self.timesteps, device=device).to(device)
         self.x_last = None
         self.t_last = None
 
@@ -59,8 +59,8 @@ class BDIADDIMScheduler(DDIMScheduler):
 
         if self.x_last is not None:
             a_last = self.alphas_cumprod[timestep + 1] if timestep + 1 < len(self.alphas_cumprod) else self.final_alpha_cumprod
-            x_prev = (self.x_last - (1 - self.gamma) * (self.x_last - sample)
-                      - self.gamma * (a_last**0.5 * pred_original_sample + (1 - a_last)**0.5 * model_output - sample)
+            x_prev = (self.x_last - (1 - self.gamma) * (self.x_last - sample) 
+                      - self.gamma * (a_last**0.5 * pred_original_sample + (1 - a_last)**0.5 * model_output - sample) 
                       + alpha_prod_t_prev**0.5 * pred_original_sample + (1 - alpha_prod_t_prev - variance)**0.5 * model_output - sample)
         else:
             x_prev = alpha_prod_t_prev**0.5 * pred_original_sample + (1 - alpha_prod_t_prev - variance)**0.5 * model_output + variance
@@ -76,4 +76,3 @@ class BDIADDIMScheduler(DDIMScheduler):
     def reset(self):
         self.x_last = None
         self.t_last = None
-
