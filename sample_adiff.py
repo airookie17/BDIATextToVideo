@@ -59,6 +59,20 @@ if __name__ == "__main__":
     seed = 0
     output_folder = "./videos_adiff"
 
+  # Generate video with BDIA-DDIM scheduler   
+  generate_video(
+        prompt=prompt,
+        negative_prompt=negative_prompt,
+        num_inference_steps=num_inference_steps,
+        guidance_scale=guidance_scale,
+        num_frames=24,
+        seed=seed,
+        scheduler_type="bdia-ddim",
+        gamma=0.5,
+        output_folder=output_folder,
+        video_name="gui_bdia_ddim"
+    )
+
     # Generate video with DDIM scheduler
     generate_video(
         prompt=prompt,
@@ -73,19 +87,8 @@ if __name__ == "__main__":
         video_name="gui_ddim"
     )
 
-    # Generate video with BDIA-DDIM scheduler
-    generate_video(
-        prompt=prompt,
-        negative_prompt=negative_prompt,
-        num_inference_steps=num_inference_steps,
-        guidance_scale=guidance_scale,
-        num_frames=24,
-        seed=seed,
-        scheduler_type="bdia-ddim",
-        gamma=0.5,
-        output_folder=output_folder,
-        video_name="gui_bdia_ddim"
-    )
+
+
 
     # Assess videos
     ddim_path = f"{output_folder}/gui_ddim.mp4"
