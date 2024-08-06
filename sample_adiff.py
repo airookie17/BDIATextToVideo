@@ -60,7 +60,7 @@ if __name__ == "__main__":
     output_folder = "./videos_adiff"
 
   # Generate video with BDIA-DDIM scheduler   
-  generate_video(
+    generate_video(
         prompt=prompt,
         negative_prompt=negative_prompt,
         num_inference_steps=num_inference_steps,
