@@ -3,7 +3,6 @@ import numpy as np
 from .scheduling_ddim import DDIMScheduler, DDIMSchedulerOutput
 from typing import Optional, Union, Tuple, List
 
-
 class BDIADDIMScheduler(DDIMScheduler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -13,8 +12,8 @@ class BDIADDIMScheduler(DDIMScheduler):
 
     def set_timesteps(self, num_inference_steps: int, device: torch.device = None):
         self.num_inference_steps = num_inference_steps
-        self.timesteps = np.arange(0, self.num_train_timesteps, self.num_train_timesteps // self.num_inference_steps)[::-1]
-        self.timesteps = torch.tensor(self.timesteps, device=device).to(device)
+        self.timesteps = np.arange(0, self.config.num_train_timesteps, self.config.num_train_timesteps // self.num_inference_steps)[::-1].copy()
+        self.timesteps = torch.tensor(self.timesteps, device=device)
         self.x_last = None
         self.t_last = None
 
@@ -29,7 +28,7 @@ class BDIADDIMScheduler(DDIMScheduler):
         variance_noise: Optional[torch.FloatTensor] = None,
         return_dict: bool = True,
     ) -> Union[DDIMSchedulerOutput, Tuple]:
-        prev_timestep = timestep - self.num_train_timesteps // self.num_inference_steps
+        prev_timestep = timestep - self.config.num_train_timesteps // self.num_inference_steps
 
         alpha_prod_t = self.alphas_cumprod[timestep]
         alpha_prod_t_prev = self.alphas_cumprod[prev_timestep] if prev_timestep >= 0 else self.final_alpha_cumprod
