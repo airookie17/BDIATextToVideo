@@ -91,8 +91,9 @@ if __name__ == "__main__":
 
 
     # Assess videos
-    ddim_path = f"{output_folder}/gui_ddim.mp4"
     bdia_ddim_path = f"{output_folder}/gui_bdia_ddim.mp4"
+    ddim_path = f"{output_folder}/gui_ddim.mp4"
+    
 
     # ddim_scores = assess_video(ddim_path)
     # bdia_ddim_scores = assess_video(bdia_ddim_path)
