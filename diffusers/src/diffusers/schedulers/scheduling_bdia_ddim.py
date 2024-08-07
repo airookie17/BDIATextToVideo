@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from diffusers.schedulers import DDIMScheduler, DDIMSchedulerOutput
+from .scheduling_ddim import DDIMScheduler, DDIMSchedulerOutput
 from typing import Optional, Union, Tuple
 import cv2
 
