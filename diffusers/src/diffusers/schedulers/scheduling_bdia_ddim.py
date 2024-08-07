@@ -1,15 +1,15 @@
 import torch
 import numpy as np
-from .scheduling_ddim import DDIMScheduler, DDIMSchedulerOutput
-from typing import Optional, Union, Tuple, List
-
+from diffusers.schedulers import DDIMScheduler, DDIMSchedulerOutput
+from typing import Optional, Union, Tuple
+import cv2
 
 class BDIADDIMScheduler(DDIMScheduler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.x_last = None  # Tracks the last sample
         self.t_last = None  # Tracks the last timestep
-        self.gamma = kwargs.get('gamma', 0.1)  # Default gamma value
+        self.gamma = kwargs.get('gamma', 0.1)  # Adjust gamma for less noise
 
     def set_timesteps(self, num_inference_steps: int, device: torch.device = None):
         self.num_inference_steps = num_inference_steps
