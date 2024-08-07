@@ -8,7 +8,7 @@ import os
 
 
 def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale, num_frames, seed,
-                   scheduler_type="ddim", gamma=0.5, output_folder="", video_name=""):
+                   scheduler_type="ddim", gamma=0.5, output_folder="./videos_adiff", video_name=""):
     torch.manual_seed(seed)
     
     # Load the motion adapter
@@ -69,15 +69,15 @@ def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale,
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate animated video using diffusers library")
     parser.add_argument('--prompt', type=str, required=True, help='Text prompt for video generation')
-    parser.add_argument('--negative_prompt', type=str, required=True, help='Negative prompt for video generation')
+    parser.add_argument('--negative_prompt', type=str, default="bad quality, worse quality", help='Negative prompt for video generation')
     parser.add_argument('--num_inference_steps', type=int, required=True, help='Number of inference steps')
     parser.add_argument('--guidance_scale', type=float, required=True, help='Guidance scale')
     parser.add_argument('--num_frames', type=int, required=True, help='Number of frames')
-    parser.add_argument('--seed', type=int, required=True, help='Random seed')
+    parser.add_argument('--seed', type=int, default=0, help='Random seed')
     parser.add_argument('--scheduler_type', type=str, required=True, choices=['ddim', 'bdia-ddim'],
                         help='Scheduler type')
     parser.add_argument('--gamma', type=float, default=0.5, help='Gamma value for BDIA-DDIM scheduler')
-    parser.add_argument('--output_folder', type=str, required=True, help='Output folder to save the video')
+    parser.add_argument('--output_folder', type=str, default="./videos_adiff", help='Output folder to save the video')
     parser.add_argument('--video_name', type=str, required=True, help='Name of the output video file')
     
     args = parser.parse_args()
