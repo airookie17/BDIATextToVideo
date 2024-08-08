@@ -1,19 +1,18 @@
-from .scheduling_ddim import DDIMScheduler, DDIMSchedulerOutput
 import torch
 import numpy as np
-from typing import Optional, Union, Tuple, List
-
+from .scheduling_ddim import DDIMScheduler, DDIMSchedulerOutput
+from typing import Optional, Union, Tuple
 
 class BDIADDIMScheduler(DDIMScheduler):
     def __init__(self, *args, **kwargs):
+        self.gamma = kwargs.pop('gamma', 0.5)  # Default gamma value
         super().__init__(*args, **kwargs)
-        self.x_last = None  # Tracks the last sample
-        self.t_last = None  # Tracks the last timestep
-        self.gamma = kwargs.get('gamma', 0.5)  # Default gamma value
+        self.x_last = None
+        self.t_last = None
 
-    def set_timesteps(self, num_inference_steps: int):
-        self.num_inference_steps = num_inference_steps
-        self.timesteps = np.arange(0, self.num_train_timesteps, self.num_train_timesteps // self.num_inference_steps)[::-1]
+    def set_timesteps(self, num_inference_steps: int, device: Union[str, torch.device] = None):
+        super().set_timesteps(num_inference_steps, device)
+        self.timesteps = self.timesteps.to(device)
         self.x_last = None
         self.t_last = None
 
@@ -24,55 +23,82 @@ class BDIADDIMScheduler(DDIMScheduler):
         sample: torch.FloatTensor,
         eta: float = 0.0,
         use_clipped_model_output: bool = False,
-        generator: Optional[torch.Generator] = None,
+        generator=None,
         variance_noise: Optional[torch.FloatTensor] = None,
         return_dict: bool = True,
     ) -> Union[DDIMSchedulerOutput, Tuple]:
-        prev_timestep = timestep - self.num_train_timesteps // self.num_inference_steps
-
-        alpha_prod_t = self.alphas_cumprod[timestep]
-        alpha_prod_t_prev = self.alphas_cumprod[prev_timestep] if prev_timestep >= 0 else self.final_alpha_cumprod
+        # Get the device from the sample tensor
+        device = sample.device
+    
+        # Get the index in the timestep array
+        step_index = (self.timesteps == timestep).nonzero().item()
+        prev_timestep = self.timesteps[step_index + 1] if step_index < len(self.timesteps) - 1 else 0
+    
+        # Compute alphas, betas
+        alpha_prod_t = self.alphas_cumprod[timestep].to(device)
+        alpha_prod_t_prev = self.alphas_cumprod[prev_timestep].to(device) if prev_timestep >= 0 else self.final_alpha_cumprod.to(device)
         beta_prod_t = 1 - alpha_prod_t
-        beta_prod_t_prev = 1 - alpha_prod_t_prev
-
-        if self.prediction_type == "epsilon":
-            pred_original_sample = (sample - beta_prod_t**0.5 * model_output) / alpha_prod_t**0.5
-        elif self.prediction_type == "sample":
-            pred_original_sample = model_output
-        elif self.prediction_type == "v_prediction":
+    
+        # Compute predicted original sample from predicted noise also called
+        # "predicted x_0" of formula (12) from https://arxiv.org/pdf/2010.02502.pdf
+        if self.config.prediction_type == "epsilon":
+            pred_original_sample = (sample - beta_prod_t ** (0.5) * model_output) / alpha_prod_t ** (0.5)
+        elif self.config.prediction_type == "v_prediction":
             pred_original_sample = (alpha_prod_t**0.5) * sample - (beta_prod_t**0.5) * model_output
-
-        if self.thresholding:
-            pred_original_sample = self._threshold_sample(pred_original_sample)
-
-        variance = 0
-        if eta > 0:
-            variance = self._get_variance(timestep, prev_timestep)
-            if variance_noise is None:
-                variance_noise = torch.randn_like(model_output, generator=generator)
-            variance = eta * variance**0.5 * variance_noise
-
-        if use_clipped_model_output:
-            model_output = (sample - alpha_prod_t**0.5 * pred_original_sample) / beta_prod_t**0.5
-            pred_original_sample = torch.clamp(pred_original_sample, -1, 1)
-
-        if self.x_last is not None:
-            a_last = self.alphas_cumprod[timestep + 1] if timestep + 1 < len(self.alphas_cumprod) else self.final_alpha_cumprod
-            x_prev = (self.x_last - (1 - self.gamma) * (self.x_last - sample)
-                      - self.gamma * (a_last**0.5 * pred_original_sample + (1 - a_last)**0.5 * model_output - sample)
-                      + alpha_prod_t_prev**0.5 * pred_original_sample + (1 - alpha_prod_t_prev - variance)**0.5 * model_output - sample)
+        elif self.config.prediction_type == "sample":
+            pred_original_sample = model_output
         else:
-            x_prev = alpha_prod_t_prev**0.5 * pred_original_sample + (1 - alpha_prod_t_prev - variance)**0.5 * model_output + variance
-
-        self.x_last = sample
+            raise ValueError(f"prediction_type given as {self.config.prediction_type} must be one of `epsilon`, `sample`, or `v_prediction`")
+    
+        # 4. Clip or threshold "predicted x_0"
+        if self.config.thresholding:
+            pred_original_sample = self._threshold_sample(pred_original_sample)
+        elif self.config.clip_sample:
+            pred_original_sample = pred_original_sample.clamp(-self.config.clip_sample_range, self.config.clip_sample_range)
+    
+        # 5. compute variance: "sigma_t(η)" -> see formula (16)
+        # σ_t = sqrt((1 − α_t−1)/(1 − α_t)) * sqrt(1 − α_t/α_t−1)
+        variance = self._get_variance(timestep, prev_timestep).to(device)
+        std_dev_t = eta * variance ** (0.5)
+    
+        if use_clipped_model_output:
+            # the pred_original_sample is always re-derived from the clipped x_0 in Glide
+            pred_original_sample = (sample - beta_prod_t ** (0.5) * model_output) / alpha_prod_t ** (0.5)
+    
+        # 6. compute "direction pointing to x_t" of formula (12) from https://arxiv.org/pdf/2010.02502.pdf
+        pred_sample_direction = (1 - alpha_prod_t_prev - std_dev_t**2) ** (0.5) * model_output
+    
+        # 7. compute x_t without "random noise" of formula (12) from https://arxiv.org/pdf/2010.02502.pdf
+        if self.x_last is not None:
+            a_last = self.alphas_cumprod[self.t_last].to(device)
+            x_prev = (
+                self.x_last
+                - (1 - self.gamma) * (self.x_last - sample)
+                - self.gamma * (a_last**0.5 * pred_original_sample + (1 - a_last)**0.5 * model_output - sample)
+                + alpha_prod_t_prev ** (0.5) * pred_original_sample
+                + pred_sample_direction
+                - sample
+            )
+        else:
+            x_prev = alpha_prod_t_prev ** (0.5) * pred_original_sample + pred_sample_direction
+    
+        if eta > 0:
+            if variance_noise is not None and generator is not None:
+                raise ValueError(
+                    "Cannot pass both generator and variance_noise. Please make sure that either `generator` or `variance_noise` stays `None`."
+                )
+    
+            if variance_noise is None:
+                variance_noise = torch.randn_like(model_output, generator=generator, device=device)
+            variance = std_dev_t * variance_noise
+    
+            x_prev = x_prev + variance
+    
+        # Update last sample and timestep
+        self.x_last = sample.to(device)
         self.t_last = timestep
-
+    
         if not return_dict:
             return (x_prev,)
-
+    
         return DDIMSchedulerOutput(prev_sample=x_prev, pred_original_sample=pred_original_sample)
-
-    def reset(self):
-        self.x_last = None
-        self.t_last = None
-

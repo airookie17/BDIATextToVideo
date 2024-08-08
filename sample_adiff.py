@@ -51,7 +51,7 @@ def load_video(path):
 
 if __name__ == "__main__":
     # Define video generation parameters
-    prompt = ("A horse galloping in a meadow, masterpiece, best quality, "
+    prompt = ("A panda playing a guitar, masterpiece, best quality, "
               "highly detailed, ultradetailed")
     negative_prompt = "bad quality, worse quality"
     num_inference_steps = 40
@@ -59,37 +59,41 @@ if __name__ == "__main__":
     seed = 0
     output_folder = "./videos_adiff"
 
+  # Generate video with BDIA-DDIM scheduler   
+    generate_video(
+        prompt=prompt,
+        negative_prompt=negative_prompt,
+        num_inference_steps=num_inference_steps,
+        guidance_scale=guidance_scale,
+        num_frames=24,
+        seed=seed,
+        scheduler_type="bdia-ddim",
+        gamma=0.5,
+        output_folder=output_folder,
+        video_name="gui_bdia_ddim"
+    )
+
     # Generate video with DDIM scheduler
     generate_video(
         prompt=prompt,
         negative_prompt=negative_prompt,
         num_inference_steps=num_inference_steps,
         guidance_scale=guidance_scale,
-        num_frames=32,
+        num_frames=24,
         seed=seed,
         scheduler_type="ddim",
         gamma=0.0,  # Gamma is not used in DDIM
         output_folder=output_folder,
-        video_name="horse_ddim"
+        video_name="gui_ddim"
     )
 
-    # Generate video with BDIA-DDIM scheduler
-    generate_video(
-        prompt=prompt,
-        negative_prompt=negative_prompt,
-        num_inference_steps=num_inference_steps,
-        guidance_scale=guidance_scale,
-        num_frames=32,
-        seed=seed,
-        scheduler_type="bdia-ddim",
-        gamma=0.5,
-        output_folder=output_folder,
-        video_name="horse_bdia_ddim"
-    )
+
+
 
     # Assess videos
-    ddim_path = f"{output_folder}/horse_ddim.mp4"
-    bdia_ddim_path = f"{output_folder}/horse_bdia_ddim.mp4"
+    bdia_ddim_path = f"{output_folder}/gui_bdia_ddim.mp4"
+    ddim_path = f"{output_folder}/gui_ddim.mp4"
+    
 
     # ddim_scores = assess_video(ddim_path)
     # bdia_ddim_scores = assess_video(bdia_ddim_path)
