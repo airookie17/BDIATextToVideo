@@ -239,6 +239,11 @@ class BDIADDIMScheduler(SchedulerMixin, ConfigMixin):
         self.x_last = None
         self.t_last = None
         self.gamma = gamma
+
+    def reset_state(self):
+        self.x_last = None
+        self.t_last = None
+
     def scale_model_input(self, sample: torch.Tensor, timestep: Optional[int] = None) -> torch.Tensor:
         """
         Ensures interchangeability with schedulers that need to scale the denoising model input depending on the
@@ -318,7 +323,6 @@ class BDIADDIMScheduler(SchedulerMixin, ConfigMixin):
 
         self.num_inference_steps = num_inference_steps
 
-
         # "linspace", "leading", "trailing" corresponds to annotation of Table 2. of https://arxiv.org/abs/2305.08891
         if self.config.timestep_spacing == "linspace":
             timesteps = (
@@ -345,8 +349,7 @@ class BDIADDIMScheduler(SchedulerMixin, ConfigMixin):
             )
 
         self.timesteps = torch.from_numpy(timesteps).to(device)
-        self.x_last = None
-        self.t_last = None
+        self.reset_state()
 
     def step(
             self,
@@ -456,17 +459,18 @@ class BDIADDIMScheduler(SchedulerMixin, ConfigMixin):
         # 7. Implement BDIA-DDIM update
         if self.x_last is not None:
             a_last = self.alphas_cumprod[self.t_last]
+            backward_direction = (sample / a_last.sqrt()) - (
+                    self.betas[self.t_last] / (1 - a_last).sqrt()) * pred_epsilon
             prev_sample = (
-                self.x_last
-                - (1 - self.gamma) * (self.x_last - sample)
-                - self.gamma * (a_last.sqrt() * pred_original_sample + (1 - a_last).sqrt() * pred_epsilon - sample)
-                + alpha_prod_t_prev ** (0.5) * pred_original_sample
-                + pred_sample_direction
-                - sample
+                    self.x_last
+                    - (1 - self.gamma) * (self.x_last - sample)
+                    - self.gamma * (backward_direction - sample)
+                    + alpha_prod_t_prev ** (0.5) * pred_original_sample
+                    + pred_sample_direction
+                    - sample
             )
         else:
             prev_sample = alpha_prod_t_prev ** (0.5) * pred_original_sample + pred_sample_direction
-
         if eta > 0:
             if variance_noise is not None and generator is not None:
                 raise ValueError(
