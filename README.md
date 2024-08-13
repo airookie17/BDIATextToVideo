@@ -5,11 +5,10 @@ This repository contains a project for generating animated videos from text prom
 ## Contents
 
 - `diffusers/`: Custom diffusers library.
-- `videos_adiff/` and `videos_sd/`: Folders where generated videos are saved.
+- `videos_adiff/`: Folder where generated videos are saved.
 - `generate_videos_adiff.py`: Script to generate videos using `AnimateDiffPipeline` with specified parameters.
-- `generate_videos_sd.py`: Script to generate videos using the `TextToVideoSDPipeline` with specified parameters.
 - `sample_adiff.py`: Script to install dependencies and run `generate_videos_adiff.py` with default parameters.
-- `sample_sd.py`: Script to generate videos using `generate_videos_sd.py` with default parameters.
+- `requirements.txt`: Install necessary packages.
 
 ## Setup
 
@@ -42,7 +41,7 @@ The `AnimateDiffPipeline` is used to create one of the animation pipelines. It l
 
 #### Running the Sample Script
 
-The `sample_adiff.py` script installs the necessary libraries, sets up the environment, and runs the `generate_videos_adiff.py` script with default parameters, and the output videos are saved to the `./videos_adiff` folder.
+The `sample_adiff.py` script contains the example prompts based on the `generate_videos_adiff.py` script with defined parameters, and the output videos are saved to the `./videos_adiff` folder.
 
 To run the sample script, use the following command:
 
@@ -54,7 +53,7 @@ To run the sample script, use the following command:
 You can modify the parameters in the sample.py script to customize the video generation. Here are the parameters you can change:
 
 - `prompt`: The text prompt to generate the video.
-- `negative_prompt`: The negative text prompt to avoid certain features in the video.
+- `negative_prompt`: The negative text prompts to avoid certain features in the video.
 - `num_inference_steps`: The number of inference steps.
 - `guidance_scale`: The guidance scale.
 - `num_frames`: The number of frames in the video.
@@ -64,29 +63,6 @@ You can modify the parameters in the sample.py script to customize the video gen
 - `output_folder`: The folder where the generated video will be saved.
 - `video_name`: The name of the output video file.
 
-### TextToVideoSDPipeline
-
-The `TextToVideoSDPipeline` is used to generate videos using the Stable Diffusion model. It is an alternative to the `AnimateDiffPipeline` and focuses on leveraging the text-to-video model provided by `damo-vilab`. This pipeline uses both the DDIM scheduler and a custom `BDIADDIMScheduler` for video generation. The Text-To-Video model is based on the work by Wang et al. [5].
-
-#### Running the sample script for TextToVideoSDPipeline
-
-The `sample_sd.py` script runs the `generate_videos_sd.py` script to generate videos using the `TextToVideoSDPipeline`, and the output videos are saved to the `./videos_sd` folder.
-
-To run the sample script, use the following command:
-
-   ```bash
-   python sample_sd.py
-```
-#### Modifying Parameters
-
-- `prompt`: The text prompt to generate the video.
-- `num_inference_steps`: The number of inference steps.
-- `num_frames`: The number of frames in the video.
-- `seed`: The random seed for reproducibility.
-- `scheduler_type`: The type of scheduler (ddim or bdia-ddim).
-- `gamma`: The gamma value for the BDIA-DDIM scheduler (only applicable if scheduler_type is bdia-ddim).
-- `output_folder`: The folder where the generated video will be saved.
-- `video_name`: The name of the output video file.
 
 ## Custom BDIADDIMScheduler
 
@@ -104,7 +80,7 @@ Here's a brief overview of the implementation:
 
 ### Example Usage
 
-To use the `BDIADDIMScheduler`, you need to set the `scheduler_type` parameter to `bdia-ddim` and provide a `gamma` value when calling the `generate_video` function in both `sample_adiff.py` and `sample_sd.py`.
+To use the `BDIADDIMScheduler`, you need to set the `scheduler_type` parameter to `bdia-ddim` and provide a `gamma` value when calling the `generate_video` function in `sample_adiff.py`.
 
 For more details on the implementation, please refer to the `generate_videos_adiff.py` and `scheduling_bdia_ddim.py` files.
 
