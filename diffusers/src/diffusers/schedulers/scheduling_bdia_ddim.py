@@ -459,15 +459,13 @@ class BDIADDIMScheduler(SchedulerMixin, ConfigMixin):
         # 7. Implement BDIA-DDIM update
         if self.x_last is not None:
             a_last = self.alphas_cumprod[self.t_last]
-            backward_direction = (sample / a_last.sqrt()) - (
-                    self.betas[self.t_last] / (1 - a_last).sqrt()) * pred_epsilon
             prev_sample = (
-                    self.x_last
-                    - (1 - self.gamma) * (self.x_last - sample)
-                    - self.gamma * (backward_direction - sample)
-                    + alpha_prod_t_prev ** (0.5) * pred_original_sample
-                    + pred_sample_direction
-                    - sample
+                self.x_last
+                - (1 - self.gamma) * (self.x_last - sample)
+                - self.gamma * (a_last.sqrt() * pred_original_sample + (1 - a_last).sqrt() * pred_epsilon - sample)
+                + alpha_prod_t_prev ** (0.5) * pred_original_sample
+                + pred_sample_direction
+                - sample
             )
         else:
             prev_sample = alpha_prod_t_prev ** (0.5) * pred_original_sample + pred_sample_direction
