@@ -72,7 +72,7 @@ if __name__ == "__main__":
     parser.add_argument('--prompt', type=str, required=True, help='Text prompt for video generation')
     parser.add_argument('--negative_prompt', type=str, default="bad quality, worse quality", help='Negative prompt for video generation')
     parser.add_argument('--num_inference_steps', type=int, required=True, help='Number of inference steps')
-    parser.add_argument('--guidance_scale', type=float, required=True, help='Guidance scale')
+    parser.add_argument('--guidance_scale', type=float, default=7.5, required=True, help='Guidance scale')
     parser.add_argument('--num_frames', type=int, required=True, help='Number of frames')
     parser.add_argument('--seed', type=int, default=0, help='Random seed')
     parser.add_argument('--scheduler_type', type=str, required=True, choices=['ddim', 'bdia-ddim'],
