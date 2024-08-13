@@ -37,6 +37,7 @@ def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale,
             steps_offset=1,
             gamma=gamma  # Added gamma parameter here
         )
+        print(f"Using gamma value: {scheduler.config.gamma}, for scheduler type: {scheduler_type}")
     else:
         raise ValueError("Invalid scheduler_type. Choose 'ddim' or 'bdia-ddim'.")
     
