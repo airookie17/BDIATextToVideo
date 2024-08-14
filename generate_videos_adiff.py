@@ -8,7 +8,7 @@ import os
 
 
 def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale, num_frames, seed,
-                   scheduler_type="ddim", gamma=0.5, output_folder="./videos_adiff", video_name="", fps=10):
+                   scheduler_type="ddim", gamma=0.5, output_folder="./videos_adiff", video_name=""):
     torch.manual_seed(seed)
     
     # Load the motion adapter
@@ -62,7 +62,7 @@ def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale,
     # Export frames to video
     frames = output.frames[0]
     os.makedirs(output_folder, exist_ok=True)
-    video_path = export_to_video(frames, output_video_path=os.path.join(output_folder, f"{video_name}.mp4"), fps=fps)
+    video_path = export_to_video(frames, output_video_path=os.path.join(output_folder, f"{video_name}.mp4"))
     
     return video_path
 
@@ -80,7 +80,6 @@ if __name__ == "__main__":
     parser.add_argument('--gamma', type=float, default=0.5, help='Gamma value for BDIA-DDIM scheduler')
     parser.add_argument('--output_folder', type=str, default="./videos_adiff", help='Output folder to save the video')
     parser.add_argument('--video_name', type=str, required=True, help='Name of the output video file')
-    parser.add_argument('--fps', type=int, default=8, help='Frames per second for the output video')  # Added fps argument
     
     args = parser.parse_args()
     
@@ -95,8 +94,7 @@ if __name__ == "__main__":
         scheduler_type=args.scheduler_type,
         gamma=args.gamma,
         output_folder=args.output_folder,
-        video_name=args.video_name,
-        fps=args.fps  # Pass the FPS to the generate_video function
+        video_name=args.video_name
     )
     
     print(f"Video saved to: {video_path}")
