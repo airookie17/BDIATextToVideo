@@ -8,7 +8,7 @@ import os
 
 
 def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale, num_frames, seed,
-                   scheduler_type="ddim", gamma=0.5, output_folder="./videos_adiff", video_name="", fps=8):
+                   scheduler_type="ddim", gamma=0.5, output_folder="./videos_adiff", video_name="", fps=10):
     torch.manual_seed(seed)
     
     # Load the motion adapter
@@ -35,7 +35,7 @@ def generate_video(prompt, negative_prompt, num_inference_steps, guidance_scale,
             timestep_spacing="linspace",
             beta_schedule="linear",
             steps_offset=1,
-            gamma=gamma
+            gamma=gamma  # Added gamma parameter here
         )
         print(f"Using gamma value: {scheduler.config.gamma}, for scheduler type: {scheduler_type}")
     else:
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     parser.add_argument('--prompt', type=str, required=True, help='Text prompt for video generation')
     parser.add_argument('--negative_prompt', type=str, default="bad quality, worse quality", help='Negative prompt for video generation')
     parser.add_argument('--num_inference_steps', type=int, required=True, help='Number of inference steps')
-    parser.add_argument('--guidance_scale', type=float, default=7.5, help='Guidance scale')
+    parser.add_argument('--guidance_scale', type=float, default=7.5, required=True, help='Guidance scale')
     parser.add_argument('--num_frames', type=int, required=True, help='Number of frames')
     parser.add_argument('--seed', type=int, default=0, help='Random seed')
     parser.add_argument('--scheduler_type', type=str, required=True, choices=['ddim', 'bdia-ddim'],
@@ -80,7 +80,7 @@ if __name__ == "__main__":
     parser.add_argument('--gamma', type=float, default=0.5, help='Gamma value for BDIA-DDIM scheduler')
     parser.add_argument('--output_folder', type=str, default="./videos_adiff", help='Output folder to save the video')
     parser.add_argument('--video_name', type=str, required=True, help='Name of the output video file')
-    parser.add_argument('--fps', type=int, default=8, help='Frames per second for the output video')
+    parser.add_argument('--fps', type=int, default=8, help='Frames per second for the output video')  # Added fps argument
     
     args = parser.parse_args()
     
@@ -96,7 +96,7 @@ if __name__ == "__main__":
         gamma=args.gamma,
         output_folder=args.output_folder,
         video_name=args.video_name,
-        fps=args.fps
+        fps=args.fps  # Pass the FPS to the generate_video function
     )
     
     print(f"Video saved to: {video_path}")
